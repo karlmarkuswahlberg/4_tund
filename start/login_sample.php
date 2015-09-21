@@ -12,7 +12,7 @@
 	$create_email = "";
 	$create_password = "";
 
-
+//nupuvajutuse kuulamine
 	if($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // *********************
@@ -62,6 +62,8 @@
 			}
 
 			if(	$create_email_error == "" && $create_password_error == ""){
+				//see sha512 on võetud algoritmidest php.com.
+				echo hash("sha512", $create_password);
 				echo "Võib kasutajat luua! Kasutajanimi on ".$create_email." ja parool on ".$create_password;
       }
 
@@ -70,9 +72,13 @@
 	}
 
   // funktsioon, mis eemaldab kõikvõimaliku üleliigse tekstist
+  //andmebaasi lisamiseks on see puhastus vajalik (kui andmed mis sisestatud, sobivad)
   function cleanInput($data) {
+	  //eemaldab üleliigsed tühikud ja muud sümbolid (tab, enter)
   	$data = trim($data);
+	// eemaldab backslashid "\"
   	$data = stripslashes($data);
+	//muudab sümbolid masinkeelde. nad on tekstikujul.
   	$data = htmlspecialchars($data);
   	return $data;
   }
