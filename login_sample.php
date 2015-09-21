@@ -1,10 +1,5 @@
 <?php
 
-//loome andmebaasi juhendi
-require_once("../config.php");
-$database = "if15_skmw";
-$mysqli = new mysqli($servername, $username, $password, $database);
-
   // muuutujad errorite jaoks
 	$email_error = "";
 	$password_error = "";
