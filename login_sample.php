@@ -1,5 +1,17 @@
 <?php
 
+// ühenduse loomiseks kasuta MYSQL
+require_once("../config.php");
+$database = "if15_skmw";
+$mysqli = new mysqli($servername, $username, $password, $database);
+
+//check connection_aborted
+if($mysqli->connect_error){
+	die("connect error ".mysqli_connect_error());
+	//kui database näiteks muuta "if15_skmw" mingi typo, siis viskab access denied ja
+	//ühendust pole
+}
+
   // muuutujad errorite jaoks
 	$email_error = "";
 	$password_error = "";
@@ -65,7 +77,25 @@
 				//see sha512 on võetud algoritmidest php.com.
 				echo hash("sha512", $create_password);
 				echo "Võib kasutajat luua! Kasutajanimi on ".$create_email." ja parool on ".$create_password;
-      }
+      
+				//tekitan parooli räsi muutujasse "hash"
+				$hash = hash("sha512", $create_password);
+				
+				//salvestan andmebaasi stmt - statement. sulgudesse tuleb mysqli lause.
+				//küsimärgid values. sisesta tabelisse väärtused.
+				$stmt = $mysqli->prepare("INSERT INTO user_sample (email, password) VALUES (?,?)");
+				
+				//paneme muutujad küsimärkide asemel. "ss" ehk stringid on parool ja email. iga muutuja kohta 1 täht "s"
+				$stmt->bind_param("ss", $create_email, $hash);
+				
+				//viib täide sisestuse
+				$stmt->execute();
+				
+				//sulge
+				$stmt->close();
+				
+				//putty mysql: select * from user_sample;
+	  }
 
     } // create if end
 
@@ -83,7 +113,11 @@
   	return $data;
   }
 
+  //sulgeme MYSQL ühenduse.
+  $mysqli->close();
+  
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
